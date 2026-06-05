@@ -97,6 +97,12 @@ public class GoogleAuthService {
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> verifyGoogleToken(String credential) {
+        if (googleClientId == null || googleClientId.isBlank()) {
+            log.error("GOOGLE_CLIENT_ID is not configured");
+            throw new BadRequestException("Google login is not configured. " +
+                    "Set GOOGLE_CLIENT_ID environment variable.");
+        }
+
         String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + credential;
 
         try {

@@ -36,7 +36,7 @@ public class CartServiceImpl implements CartService {
     @Transactional(readOnly = true)
     public CartResponse getCart(Long userId) {
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found for user"));
+                .orElseGet(() -> createNewCart(userId));
         return toResponse(cart);
     }
 

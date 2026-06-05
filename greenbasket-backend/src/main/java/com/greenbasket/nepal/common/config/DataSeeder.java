@@ -6,6 +6,7 @@ import com.greenbasket.nepal.domain.user.repository.RoleRepository;
 import com.greenbasket.nepal.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,18 @@ public class DataSeeder implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.seed.admin-email:admin@greenbasketnepal.com}")
+    private String adminEmail;
+
+    @Value("${app.seed.admin-password:Admin@123}")
+    private String adminPassword;
+
+    @Value("${app.seed.admin-phone:9812345678}")
+    private String adminPhone;
+
     @Override
     public void run(String... args) {
-        if (userRepository.findByEmail("admin@greenbasketnepal.com").isEmpty()) {
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
             Role adminRole = roleRepository.findByName("ADMIN").orElse(null);
             if (adminRole == null) {
                 log.warn("ADMIN role not found — skipping admin seed");
@@ -30,9 +40,9 @@ public class DataSeeder implements CommandLineRunner {
 
             User admin = User.builder()
                     .fullName("System Administrator")
-                    .email("admin@greenbasketnepal.com")
-                    .password(passwordEncoder.encode("Admin@123"))
-                    .phone("9812345678")
+                    .email(adminEmail)
+                    .password(passwordEncoder.encode(adminPassword))
+                    .phone(adminPhone)
                     .role(adminRole)
                     .isActive(true)
                     .isEmailVerified(true)
@@ -41,7 +51,10 @@ public class DataSeeder implements CommandLineRunner {
                     .build();
 
             userRepository.save(admin);
-            log.info("Default admin user created: admin@greenbasketnepal.com / Admin@123");
+            log.info("Default admin user created: {}", adminEmail);
+            log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            log.warn("!! DEFAULT ADMIN PASSWORD IN USE - CHANGE IMMEDIATELY AFTER LOGIN  !!");
+            log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }
 }

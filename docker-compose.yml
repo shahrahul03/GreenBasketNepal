@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
@@ -37,6 +35,16 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-root}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM:-noreply@greenbasketnepal.com}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@greenbasketnepal.com}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,https://greenbasket.com.np}
+      UPLOAD_DIR: /app/uploads
     ports:
       - "8080:8080"
     volumes:
@@ -46,14 +54,17 @@ services:
     build:
       context: ./greenbasket-frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api/v1
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        VITE_APP_NAME: Green Basket Nepal
+        VITE_APP_URL: ${FRONTEND_URL:-http://localhost}
     container_name: greenbasket-frontend
     restart: unless-stopped
     depends_on:
       - app
     ports:
       - "80:80"
-    environment:
-      VITE_API_BASE_URL: /api/v1
 
 volumes:
   mysql_data:

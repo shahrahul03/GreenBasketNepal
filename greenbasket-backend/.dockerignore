@@ -1,0 +1,16 @@
+target/
+*.class
+*.jar
+.classpath
+.project
+.settings/
+.factorypath
+.env
+uploads/*
+!uploads/.gitkeep
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

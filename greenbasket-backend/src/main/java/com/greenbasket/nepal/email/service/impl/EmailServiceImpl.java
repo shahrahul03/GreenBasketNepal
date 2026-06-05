@@ -7,9 +7,7 @@ import com.greenbasket.nepal.domain.product.repository.ProductRepository;
 import com.greenbasket.nepal.domain.user.entity.User;
 import com.greenbasket.nepal.domain.user.repository.UserRepository;
 import com.greenbasket.nepal.email.service.EmailService;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -31,13 +29,24 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private final JavaMailSender mailSender;
     private final ResourceLoader resourceLoader;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+
+    private final JavaMailSender mailSender;
+
+    public EmailServiceImpl(
+            ResourceLoader resourceLoader,
+            ProductRepository productRepository,
+            UserRepository userRepository,
+            org.springframework.beans.factory.ObjectProvider<JavaMailSender> mailSenderProvider) {
+        this.resourceLoader = resourceLoader;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.mailSender = mailSenderProvider.getIfAvailable();
+    }
 
     @Value("${app.email.from}")
     private String fromEmail;
@@ -173,6 +182,10 @@ public class EmailServiceImpl implements EmailService {
     // ──────────────────────────────────────────────
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
+        if (mailSender == null) {
+            log.warn("Mail not configured — skipping email to: {} — subject: {}", to, subject);
+            return;
+        }
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -183,7 +196,7 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
             log.info("Email sent to: {} — subject: {}", to, subject);
         } catch (Exception e) {
-            log.error("Failed to send email to: {} — subject: {} — error: {}", to, subject, e.getMessage());
+            log.warn("Failed to send email to: {} — subject: {} — {}", to, subject, e.getMessage());
         }
     }
 

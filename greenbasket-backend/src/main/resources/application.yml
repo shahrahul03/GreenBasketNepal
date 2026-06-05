@@ -6,13 +6,13 @@ spring:
     name: green-basket-nepal
 
   datasource:
-    url: jdbc:mysql://localhost:3306/green_basket_nepal?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kathmandu
-    username: root
-    password: root
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/green_basket_nepal?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kathmandu}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:20}
+      minimum-idle: ${HIKARI_MIN_IDLE:5}
       idle-timeout: 300000
       connection-timeout: 20000
       max-lifetime: 1200000
@@ -58,8 +58,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    username: ${MAIL_USERNAME:rahulvelox33@gmail.com}
+    password: ${MAIL_PASSWORD:ppedzcxejjafrvha}
     properties:
       mail:
         smtp:
@@ -73,23 +73,30 @@ spring:
 
 app:
   jwt:
-    access-token-secret: ${JWT_ACCESS_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970337336763979244226452948404D635166546A576E5A7234753778214125442A47}
-    access-token-expiration: 900000
-    refresh-token-secret: ${JWT_REFRESH_SECRET:5970337336763979244226452948404D635166546A576E5A7234753778214125442A47404E635266556A586E3272357538782F413F4428472B4B6250645367566B}
-    refresh-token-expiration: 604800000
+    access-token-secret: ${JWT_ACCESS_SECRET:ZGV2LWFjY2Vzcy1zZWNyZXQtZm9yLWdyZWVuLWJhc2tldC1uZXBhbC1vbmx5}
+    access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+    refresh-token-secret: ${JWT_REFRESH_SECRET:ZGV2LXJlZnJlc2gtc2VjcmV0LWZvci1ncmVlbi1iYXNrZXQtbmVwYWwtb25seQ==}
+    refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
 
   google:
-    client-id: 181403238893-dnj91o8aihf69ii094avtu1ua0oafno7.apps.googleusercontent.com
+    client-id: ${GOOGLE_CLIENT_ID:181403238893-dnj91o8aihf69ii094avtu1ua0oafno7.apps.googleusercontent.com}
 
   upload:
-    dir: ./uploads
+    dir: ${UPLOAD_DIR:./uploads}
     max-file-size: 5242880
     allowed-extensions: jpg,jpeg,png,webp
 
   email:
-    from: ${MAIL_FROM:${MAIL_USERNAME:noreply@greenbasketnepal.com}}
+    from: ${MAIL_FROM:${MAIL_USERNAME:rahulvelox33@gmail.com}}
     admin-email: ${ADMIN_EMAIL:admin@greenbasketnepal.com}
     frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
+  openapi:
+    server-url: ${API_SERVER_URL:http://localhost:8080}
+    server-description: ${API_SERVER_DESCRIPTION:Local Development}
+
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
 
 logging:
   level:

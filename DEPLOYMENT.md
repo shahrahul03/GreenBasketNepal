@@ -1,202 +1,245 @@
-# Deployment Guide
+# Green Basket Nepal - Deployment Guide
 
-This guide covers production deployment for Green Basket Nepal using Docker Compose on a VPS.
+## Overview
+
+This guide covers production deployment for Green Basket Nepal across multiple platforms.
+
+| Component | Platform | Technology |
+|-----------|----------|------------|
+| **Frontend** | Vercel | React + Vite SPA |
+| **Backend** | Render / Railway | Spring Boot 3.2.5 + Java 21 |
+| **Database** | Railway MySQL / Cloud MySQL | MySQL 8.0 |
+| **File Storage** | Backend filesystem (ephemeral) | `/app/uploads` |
+
+---
 
 ## Prerequisites
 
-- Linux VPS (Ubuntu 22.04 LTS recommended)
-- Docker Engine 24+ and Docker Compose v2+
-- Domain names: `api.greenbasket.com.np`, `greenbasket.com.np`
-- SSL certificates (via Let's Encrypt / Certbot)
-- Nginx reverse proxy on the host
+- Java 21+ (for local build verification)
+- Node.js 20+ (for local build verification)
+- Docker & Docker Compose (for containerized deployment)
+- A Railway / Render account
+- A Vercel account
+- A Google Cloud Console project (for OAuth)
 
-## 1. Server Preparation
+---
+
+## Environment Variables
+
+### Backend Required Variables
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `SPRING_DATASOURCE_URL` | Yes | JDBC MySQL connection URL | `jdbc:mysql://host:3306/db?useSSL=true&serverTimezone=UTC` |
+| `SPRING_DATASOURCE_USERNAME` | Yes | Database username | `root` |
+| `SPRING_DATASOURCE_PASSWORD` | Yes | Database password | |
+| `JWT_ACCESS_SECRET` | Yes | 64+ char base64 JWT signing key | Generate: `openssl rand -base64 32` |
+| `JWT_REFRESH_SECRET` | Yes | 64+ char base64 JWT refresh key | Generate: `openssl rand -base64 32` |
+| `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID | From Google Cloud Console |
+| `FRONTEND_URL` | Yes | Frontend URL | `https://greenbasket.vercel.app` |
+| `ALLOWED_ORIGINS` | Yes | CORS origins (comma-separated) | `https://greenbasket.vercel.app` |
+| `MAIL_HOST` | No | SMTP host (default: localhost) | `smtp.gmail.com` |
+| `MAIL_PORT` | No | SMTP port (default: 587) | `587` |
+| `MAIL_USERNAME` | No | SMTP username | |
+| `MAIL_PASSWORD` | No | SMTP password / app password | |
+| `MAIL_FROM` | No | From address | `noreply@greenbasketnepal.com` |
+| `ADMIN_EMAIL` | No | Admin notification email | `admin@greenbasketnepal.com` |
+| `UPLOAD_DIR` | No | Upload directory (default: ./uploads) | `/app/uploads` |
+
+### Frontend Required Variables
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `VITE_API_BASE_URL` | Yes | Backend API URL | For Vercel: `https://api.greenbasket.com.np/api/v1` |
+| `VITE_GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID | From Google Cloud Console |
+| `VITE_APP_NAME` | No | App name | `Green Basket Nepal` |
+| `VITE_APP_URL` | No | App URL | `https://greenbasket.vercel.app` |
+
+---
+
+## Deployment Option 1: Docker Compose (VPS)
+
+Deploy to any Linux VPS with Docker installed.
+
+### Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-org/green-basket-nepal.git
+   cd green-basket-nepal
+   ```
+
+2. **Create `.env` file**
+   ```bash
+   cat > .env << 'EOF'
+   MYSQL_PASSWORD=<strong-random-password>
+   JWT_ACCESS_SECRET=$(openssl rand -base64 32)
+   JWT_REFRESH_SECRET=$(openssl rand -base64 32)
+   GOOGLE_CLIENT_ID=<your-google-client-id>
+   MAIL_HOST=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USERNAME=<your-email>
+   MAIL_PASSWORD=<your-app-password>
+   FRONTEND_URL=https://<your-domain>
+   ALLOWED_ORIGINS=https://<your-domain>
+   EOF
+   ```
+
+3. **Build and start**
+   ```bash
+   docker compose up --build -d
+   ```
+
+4. **Verify**
+   ```bash
+   docker compose ps
+   docker compose logs app --tail=20
+   ```
+
+---
+
+## Deployment Option 2: Vercel (Frontend) + Render (Backend) + Railway MySQL
+
+### Step 1: Database - Railway MySQL
+
+1. Create a new MySQL project on [Railway](https://railway.app)
+2. Copy the connection string: `jdbc:mysql://<host>:<port>/<db>?useSSL=true&requireSSL=true&serverTimezone=UTC`
+3. Note the username and password
+
+### Step 2: Backend - Render
+
+1. Create a new **Web Service** on [Render](https://render.com)
+2. Connect your GitHub repository
+3. Configure:
+   - **Root Directory**: `greenbasket-backend`
+   - **Build Command**: `mvn clean package -DskipTests -B`
+   - **Start Command**: `java -jar target/green-basket-nepal-1.0.0.jar`
+   - **Java Version**: 21
+4. Add all **Backend Required Variables** (see above)
+5. Set `SPRING_PROFILES_ACTIVE=prod`
+6. Deploy
+
+### Step 3: Frontend - Vercel
+
+1. Create a new project on [Vercel](https://vercel.com)
+2. Connect your GitHub repository
+3. Configure:
+   - **Root Directory**: `greenbasket-frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Add all **Frontend Required Variables** (see above)
+5. Set `VITE_API_BASE_URL` to your Render backend URL, e.g.:
+   `https://greenbasket-api.onrender.com/api/v1`
+6. Deploy
+
+### Step 4: Configure Google OAuth
+
+Add the following authorized redirect URIs in Google Cloud Console:
+- `https://<vercel-domain>`
+- `https://<vercel-domain>/login`
+
+---
+
+## JWT Secret Generation
 
 ```bash
-# Update system
-sudo apt update && sudo apt upgrade -y
-
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
-
-# Install Nginx + Certbot
-sudo apt install -y nginx certbot python3-certbot-nginx
-
-# Firewall
-sudo ufw allow 22/tcp
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-```
-
-## 2. Generate JWT Secrets
-
-```bash
+# Generate 256-bit base64 secrets
 ACCESS_SECRET=$(openssl rand -base64 32)
 REFRESH_SECRET=$(openssl rand -base64 32)
 echo "JWT_ACCESS_SECRET=$ACCESS_SECRET"
 echo "JWT_REFRESH_SECRET=$REFRESH_SECRET"
 ```
 
-## 3. Clone & Configure
+---
 
+## Build Commands (Local Verification)
+
+### Backend
 ```bash
-sudo mkdir -p /opt/greenbasket
-sudo chown $USER:$USER /opt/greenbasket
-cd /opt/greenbasket
-
-git clone https://github.com/your-org/green-basket-nepal.git .
-
-# Create .env file
-cat > .env << EOF
-MYSQL_PASSWORD=change_this_to_a_strong_password
-JWT_ACCESS_SECRET=<your-access-secret>
-JWT_REFRESH_SECRET=<your-refresh-secret>
-EOF
+cd greenbasket-backend
+mvn clean package -DskipTests -B
+# Output: target/green-basket-nepal-1.0.0.jar
 ```
 
-## 4. Build & Run
+### Frontend
+```bash
+cd greenbasket-frontend
+npm ci
+npm run build
+# Output: dist/
+```
 
+---
+
+## Run Commands (Local)
+
+### Backend (requires MySQL)
+```bash
+cd greenbasket-backend
+export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/green_basket_nepal?useSSL=false&serverTimezone=Asia/Kathmandu
+export SPRING_DATASOURCE_USERNAME=root
+export SPRING_DATASOURCE_PASSWORD=root
+export JWT_ACCESS_SECRET="<64-char-secret>"
+export JWT_REFRESH_SECRET="<64-char-secret>"
+export GOOGLE_CLIENT_ID="<your-client-id>"
+java -jar target/green-basket-nepal-1.0.0.jar --spring.profiles.active=prod
+```
+
+### Frontend (dev mode)
+```bash
+cd greenbasket-frontend
+cp .env.example .env
+# Edit .env with your values
+npm run dev
+```
+
+---
+
+## Docker
+
+### Build individual images
+
+```bash
+# Backend
+docker build -t greenbasket-backend ./greenbasket-backend
+
+# Frontend
+docker build \
+  --build-arg VITE_API_BASE_URL=/api/v1 \
+  --build-arg VITE_GOOGLE_CLIENT_ID=<your-client-id> \
+  -t greenbasket-frontend ./greenbasket-frontend
+```
+
+### Run full stack
 ```bash
 docker compose up --build -d
 ```
 
-### Verify
+---
+
+## Security Checklist
+
+- [ ] JWT secrets are 256-bit base64 random values
+- [ ] Database password is strong and unique
+- [ ] CORS origins are restricted to your domain only
+- [ ] Google OAuth client ID is restricted to your domain
+- [ ] SMTP credentials use app-specific passwords
+- [ ] Production profile disables Hibernate DDL auto-update
+- [ ] Flyway manages schema migrations
+- [ ] Default admin password changed immediately after first login
+- [ ] SSL/TLS enabled in production
+- [ ] File upload size is limited (10MB max)
+
+---
+
+## Rollback Procedure
 
 ```bash
-docker compose ps
-# All three services should show "Up"
-
-docker compose logs app --tail=20
-# Look for "Started GreenBasketApplication"
-```
-
-## 5. Nginx Reverse Proxy (Host-Level)
-
-Create `/etc/nginx/sites-available/greenbasket`:
-
-```nginx
-# API subdomain
-server {
-    listen 80;
-    server_name api.greenbasket.com.np;
-
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 90;
-        client_max_body_size 10M;
-    }
-}
-
-# Main domain (React frontend)
-server {
-    listen 80;
-    server_name greenbasket.com.np www.greenbasket.com.np;
-
-    location / {
-        proxy_pass http://127.0.0.1:80;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-```bash
-sudo ln -s /etc/nginx/sites-available/greenbasket /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-## 6. SSL with Let's Encrypt
-
-```bash
-sudo certbot --nginx -d greenbasket.com.np -d www.greenbasket.com.np -d api.greenbasket.com.np
-```
-
-## 7. Monitoring & Backups
-
-```bash
-# View logs
-docker compose logs -f app
-docker compose logs -f frontend
-
-# Resource usage
-docker stats
-
-# Database backup
-docker exec greenbasket-mysql mysqldump -u root -p$MYSQL_PASSWORD green_basket_nepal > backup_$(date +%F).sql
-```
-
-### Automated Backup Cron
-
-```bash
-sudo crontab -e
-# Add:
-0 2 * * * docker exec greenbasket-mysql mysqldump -u root -p<password> green_basket_nepal > /opt/backups/db_$(date +\%F).sql && find /opt/backups -name "*.sql" -mtime +7 -delete
-```
-
-## 8. Update Deployment
-
-```bash
-cd /opt/greenbasket
-git pull
-docker compose up --build -d
-# Flyway migrations run automatically
-```
-
-## 9. Rollback
-
-```bash
+# Docker
 docker compose down
-git checkout <previous-commit>
+git checkout <previous-tag>
 docker compose up --build -d
-# For DB rollback, restore from backup:
-# docker exec -i greenbasket-mysql mysql -u root -p<password> green_basket_nepal < backup_file.sql
-```
 
-## 10. Security Checklist
-
-- [ ] MySQL root password changed from default
-- [ ] JWT secrets are 256-bit base64-encoded random values
-- [ ] Firewall restricts ports 22, 80, 443 only
-- [ ] SSL enabled with auto-renewal
-- [ ] Fail2ban installed for SSH brute-force protection
-- [ ] Regular automated DB backups configured
-- [ ] Docker containers run as non-root users
-- [ ] `.env` file has restricted permissions (`chmod 600`)
-
-## Architecture Diagram
-
-```
-                                ┌─────────────┐
-                                │   Browser    │
-                                └──────┬──────┘
-                                       │
-                              ┌────────┴────────┐
-                              │  Nginx (Host)    │
-                              │  80/443 → SSL    │
-                              └────────┬────────┘
-                         ┌──────────────┼──────────────┐
-                         │              │              │
-                         ▼              ▼              ▼
-                  ┌──────────┐   ┌──────────┐   ┌──────────┐
-                  │ Frontend │   │ Backend  │   │   MySQL   │
-                  │  :80     │   │  :8080   │   │  :3306   │
-                  │  Nginx   │   │  Spring  │   │          │
-                  │  React   │   │  Boot    │   │          │
-                  └──────────┘   └──────────┘   └──────────┘
-                                       │
-                                       ▼
-                                 ┌──────────┐
-                                 │ Uploads  │
-                                 │ Volumes  │
-                                 └──────────┘
+# Database rollback requires backup restoration
+# docker exec greenbasket-mysql mysql -u root -p<password> green_basket_nepal < backup.sql
 ```
