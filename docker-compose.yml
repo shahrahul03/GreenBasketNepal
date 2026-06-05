@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: greenbasket-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-root}
+      MYSQL_DATABASE: green_basket_nepal
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./greenbasket-backend/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  app:
+    build:
+      context: ./greenbasket-backend
+      dockerfile: Dockerfile
+    container_name: greenbasket-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/green_basket_nepal?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kathmandu
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-root}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads_data:/app/uploads
+
+  frontend:
+    build:
+      context: ./greenbasket-frontend
+      dockerfile: Dockerfile
+    container_name: greenbasket-frontend
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+    environment:
+      VITE_API_BASE_URL: /api/v1
+
+volumes:
+  mysql_data:
+  uploads_data:

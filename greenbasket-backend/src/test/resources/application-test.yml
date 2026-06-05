@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+  mail:
+    host: localhost
+    port: 2525
+    username: test
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+app:
+  jwt:
+    access-token-secret: test-access-secret-key-that-is-at-least-32-bytes-long-for-hmac
+    access-token-expiration: 900000
+    refresh-token-secret: test-refresh-secret-key-that-is-at-least-32-bytes-long-for-hmac
+    refresh-token-expiration: 604800000
+  google:
+    client-id: test-client-id
+  email:
+    from: test@greenbasketnepal.com
+    admin-email: admin@greenbasketnepal.com
+    frontend-url: http://localhost:5173

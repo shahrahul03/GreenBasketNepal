@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Order Cancelled</title></head>
+<body style="margin:0;padding:0;background-color:#f4f7f6;font-family:'Segoe UI',Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f7f6;padding:20px 0;">
+<tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<tr><td style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:30px 40px;text-align:center;border-radius:12px 12px 0 0;">
+<img src="{{frontendUrl}}/logo-white.png" alt="Green Basket Nepal" width="60" height="60" style="display:block;margin:0 auto 12px;">
+<h1 style="color:#ffffff;font-size:24px;margin:0;font-weight:700;">Order Cancelled</h1>
+</td></tr>
+<tr><td style="background:#ffffff;padding:40px;border-radius:0 0 12px 12px;">
+<p style="color:#1e293b;font-size:16px;line-height:1.6;margin:0 0 20px;">Dear <strong>{{name}}</strong>,</p>
+<p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 16px;">Your order <strong style="color:#dc2626;">#{{orderNumber}}</strong> has been cancelled.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fef2f2;border-radius:8px;padding:16px;margin-bottom:24px;">
+<tr><td style="color:#64748b;font-size:13px;padding:4px 0;vertical-align:top;">Reason</td><td style="color:#1e293b;font-size:13px;padding:4px 0;text-align:right;">{{reason}}</td></tr>
+<tr><td style="color:#64748b;font-size:13px;padding:4px 0;vertical-align:top;">Amount Refunded</td><td style="color:#059669;font-size:13px;font-weight:600;padding:4px 0;text-align:right;">{{total}}</td></tr>
+</table>
+<p style="color:#475569;font-size:14px;line-height:1.6;margin:0 0 8px;">If you have any questions about the cancellation or refund, please don't hesitate to contact us.</p>
+<p style="color:#475569;font-size:14px;line-height:1.6;margin:0 0 24px;">We look forward to serving you again!</p>
+<div style="text-align:center;">
+<a href="{{frontendUrl}}" style="display:inline-block;background:#059669;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:600;">Browse Products</a>
+</div>
+</td></tr>
+<tr><td style="background:#e2e8f0;padding:20px 40px;text-align:center;border-radius:0 0 12px 12px;">
+<p style="color:#64748b;font-size:12px;margin:0 0 4px;">Green Basket Nepal &mdash; Fresh from Farm to Table</p>
+<p style="color:#94a3b8;font-size:11px;margin:0;">&copy; {{currentYear}} Green Basket Nepal. All rights reserved.</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

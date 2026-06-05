@@ -1,0 +1,44 @@
+### Java ###
+*.class
+*.jar
+*.war
+*.nar
+greenbasket-backend/target/
+!greenbasket-backend/target/*.gitkeep
+!.mvn/wrapper/maven-wrapper.jar
+
+### IDE ###
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+bin/
+
+### OS ###
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+### Environment ###
+.env
+*.log
+
+### Uploads ###
+greenbasket-backend/uploads/*
+!greenbasket-backend/uploads/.gitkeep
+
+### Build ###
+build/
+dist/
+*.zip
+*.tar.gz
+
+### Node ###
+node_modules/
+greenbasket-frontend/node_modules/
+greenbasket-frontend/dist/

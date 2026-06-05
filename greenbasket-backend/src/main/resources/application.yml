@@ -1,0 +1,129 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: green-basket-nepal
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/green_basket_nepal?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kathmandu
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      pool-name: GreenBasketHikariPool
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 25
+        order_inserts: true
+        order_updates: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    out-of-order: false
+    sql-migration-prefix: V
+    sql-migration-separator: __
+    sql-migration-suffixes: .sql
+    schemas: green_basket_nepal
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+app:
+  jwt:
+    access-token-secret: ${JWT_ACCESS_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970337336763979244226452948404D635166546A576E5A7234753778214125442A47}
+    access-token-expiration: 900000
+    refresh-token-secret: ${JWT_REFRESH_SECRET:5970337336763979244226452948404D635166546A576E5A7234753778214125442A47404E635266556A586E3272357538782F413F4428472B4B6250645367566B}
+    refresh-token-expiration: 604800000
+
+  google:
+    client-id: 181403238893-dnj91o8aihf69ii094avtu1ua0oafno7.apps.googleusercontent.com
+
+  upload:
+    dir: ./uploads
+    max-file-size: 5242880
+    allowed-extensions: jpg,jpeg,png,webp
+
+  email:
+    from: ${MAIL_FROM:${MAIL_USERNAME:noreply@greenbasketnepal.com}}
+    admin-email: ${ADMIN_EMAIL:admin@greenbasketnepal.com}
+    frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
+logging:
+  level:
+    com.greenbasket: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    com.greenbasket: DEBUG
+    org.hibernate.SQL: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    com.greenbasket: WARN

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Order Confirmed</title></head>
+<body style="margin:0;padding:0;background-color:#f4f7f6;font-family:'Segoe UI',Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f7f6;padding:20px 0;">
+<tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<tr><td style="background:linear-gradient(135deg,#059669,#047857);padding:30px 40px;text-align:center;border-radius:12px 12px 0 0;">
+<img src="{{frontendUrl}}/logo-white.png" alt="Green Basket Nepal" width="60" height="60" style="display:block;margin:0 auto 12px;">
+<h1 style="color:#ffffff;font-size:24px;margin:0;font-weight:700;">Order Confirmed!</h1>
+</td></tr>
+<tr><td style="background:#ffffff;padding:40px;border-radius:0 0 12px 12px;">
+<p style="color:#1e293b;font-size:16px;line-height:1.6;margin:0 0 20px;">Dear <strong>{{name}}</strong>,</p>
+<p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 24px;">Your order <strong style="color:#059669;">#{{orderNumber}}</strong> has been placed successfully and is being processed.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:24px;">
+<tr><td style="padding:6px 0;color:#64748b;font-size:13px;">Order Date</td><td style="padding:6px 0;color:#1e293b;font-size:13px;text-align:right;">{{orderDate}}</td></tr>
+<tr><td style="padding:6px 0;color:#64748b;font-size:13px;">Delivery Address</td><td style="padding:6px 0;color:#1e293b;font-size:13px;text-align:right;">{{deliveryAddress}}</td></tr>
+</table>
+<h3 style="color:#1e293b;font-size:16px;margin:0 0 12px;">Order Summary</h3>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+<tr style="background:#f1f5f9;"><th style="padding:10px 8px;text-align:left;color:#475569;font-size:13px;">Item</th><th style="padding:10px 8px;text-align:center;color:#475569;font-size:13px;">Qty</th><th style="padding:10px 8px;text-align:right;color:#475569;font-size:13px;">Price</th><th style="padding:10px 8px;text-align:right;color:#475569;font-size:13px;">Total</th></tr>
+{{items}}
+</table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:2px solid #e2e8f0;padding-top:12px;">
+<tr><td style="padding:4px 8px;color:#64748b;font-size:14px;">Subtotal</td><td style="padding:4px 8px;color:#1e293b;font-size:14px;text-align:right;">{{subtotal}}</td></tr>
+<tr><td style="padding:4px 8px;color:#64748b;font-size:14px;">Delivery Charge</td><td style="padding:4px 8px;color:#1e293b;font-size:14px;text-align:right;">{{deliveryCharge}}</td></tr>
+<tr><td style="padding:8px 8px 0;color:#059669;font-size:18px;font-weight:700;">Total</td><td style="padding:8px 8px 0;color:#059669;font-size:18px;font-weight:700;text-align:right;">{{total}}</td></tr>
+</table>
+<div style="text-align:center;margin-top:24px;">
+<a href="{{ordersUrl}}" style="display:inline-block;background:#059669;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:600;">Track My Order</a>
+</div>
+</td></tr>
+<tr><td style="background:#e2e8f0;padding:20px 40px;text-align:center;border-radius:0 0 12px 12px;">
+<p style="color:#64748b;font-size:12px;margin:0 0 4px;">Green Basket Nepal &mdash; Fresh from Farm to Table</p>
+<p style="color:#94a3b8;font-size:11px;margin:0;">&copy; {{currentYear}} Green Basket Nepal. All rights reserved.</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>
