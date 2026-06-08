@@ -1,92 +1,108 @@
 # Green Basket Nepal
 
-Farm-to-Home Vegetable and Fruit Marketplace — a full-stack e-commerce platform connecting local farmers directly to consumers in Nepal.
+Green Basket Nepal is a full-stack agricultural marketplace that connects local farmers directly with customers. The platform enables farmers to manage products and inventory, customers to browse and purchase fresh produce, delivery partners to manage deliveries, and administrators to oversee the entire marketplace.
 
-## Monorepo Structure
+## Overview
 
+The system provides a complete farm-to-home shopping experience with secure authentication, role-based access control, product management, order processing, delivery tracking, and analytics dashboards.
+
+## Features
+
+### Customer
+
+* User Registration and Login
+* Google OAuth Login
+* Product Search and Filtering
+* Shopping Cart and Wishlist
+* Secure Checkout Process
+* Order Tracking and History
+* Product Reviews and Ratings
+
+### Farmer
+
+* Farmer Registration and Approval Workflow
+* Product Management (Create, Update, Delete)
+* Inventory Management
+* Order Monitoring
+* Dashboard and Sales Overview
+
+### Delivery Partner
+
+* Delivery Assignment Management
+* Delivery Status Updates
+* Delivery Dashboard
+
+### Administrator
+
+* User Management
+* Farmer Approval System
+* Product Moderation
+* Delivery Assignment
+* Analytics Dashboard
+* Marketplace Monitoring
+
+## Technology Stack
+
+### Backend
+
+* Java 21
+* Spring Boot
+* Spring Security
+* Spring Data JPA
+* Hibernate
+* JWT Authentication
+* Google OAuth
+* MySQL
+* Flyway Migration
+
+### Frontend
+
+* React
+* Vite
+* Tailwind CSS
+* React Router
+* Axios
+* Recharts
+
+## System Architecture
+
+```text
+Customer/Farmer/Admin/Delivery Partner
+                │
+                ▼
+         React Frontend
+                │
+                ▼
+        Spring Boot API
+                │
+                ▼
+              MySQL
 ```
-GreenBasket-Nepal/
-│
-├── greenbasket-backend/          # Spring Boot 3.2.5 + Java 21 API
-│   ├── src/                      # Application source code
-│   ├── uploads/                  # File upload storage directory
-│   ├── pom.xml                   # Maven build configuration
-│   ├── Dockerfile                # Multi-stage backend Docker build
-│   └── .env.example              # Backend environment variable template
-│
-├── greenbasket-frontend/         # React 18 + Vite + Tailwind SPA
-│   ├── src/                      # Application source code
-│   ├── public/                   # Static assets
-│   ├── package.json              # npm dependencies & scripts
-│   ├── Dockerfile                # React → Nginx multi-stage build
-│   ├── nginx.conf                # Production Nginx configuration
-│   ├── vercel.json               # Vercel deployment configuration
-│   └── .env.example              # Frontend environment variable template
-│
-├── docker-compose.yml            # Full-stack Docker orchestration
-├── DEPLOYMENT.md                 # Comprehensive deployment guide
-└── README.md                     # This file
-```
 
-## Tech Stack
+## Security Features
 
-| Layer | Technology |
-|-------|-----------|
-| **Backend** | Java 21, Spring Boot 3.2.5, Spring Security, Spring Data JPA, Hibernate, Flyway, MySQL 8 |
-| **Frontend** | React 18, Vite, Tailwind CSS, React Router 6, Axios, Recharts |
-| **Auth** | JWT (access + refresh tokens), BCrypt(12), Google OAuth |
-| **API Docs** | SpringDoc OpenAPI 2.5 (Swagger UI) |
-| **Infra** | Docker, Docker Compose, Nginx |
+* JWT Access and Refresh Tokens
+* Role-Based Access Control (RBAC)
+* BCrypt Password Encryption
+* Google OAuth Authentication
+* Protected API Endpoints
+* Account Lockout Protection
 
-## Quick Start
+## Key Learning Outcomes
 
-### Prerequisites
-- JDK 21+, Node.js 20+, Docker & Docker Compose (for containerized deployment)
+* Full-Stack Application Development
+* RESTful API Design
+* Authentication and Authorization
+* Database Design and Management
+* Role-Based Access Control
+* State Management and Routing
+* Secure Software Development Practices
 
-### Local Development (Backend)
-```bash
-cd greenbasket-backend
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-```
-API: `http://localhost:8080` | Swagger: `http://localhost:8080/swagger-ui.html`
+## Project Highlights
 
-### Local Development (Frontend)
-```bash
-cd greenbasket-frontend
-npm install
-npm run dev
-```
-Frontend: `http://localhost:5173` (proxies `/api` and `/uploads` to backend)
-
-### Docker (Full Stack)
-```bash
-docker compose up --build -d
-```
-Frontend: `http://localhost` | API: `http://localhost:8080`
-
-## Deployment
-
-See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for complete deployment instructions.
-
-### Supported Platforms
-
-| Component | Platform |
-|-----------|----------|
-| **Frontend** | Vercel, Netlify, Docker/Nginx |
-| **Backend** | Render, Railway, Docker |
-| **Database** | Railway MySQL, Cloud MySQL, Docker MySQL |
-
-### Environment Variables
-- Backend: `greenbasket-backend/.env.example`
-- Frontend: `greenbasket-frontend/.env.example`
-
-## Key Features
-
-- Role-based access: ADMIN, CUSTOMER, FARMER, DELIVERY_PARTNER
-- Product catalog with search, filter, and pagination
-- Shopping cart, wishlist, and order management
-- Delivery assignment and tracking with state machine
-- Admin dashboard with aggregated analytics
-- JWT token rotation and refresh flow
-- Google OAuth authentication
-- Flyway-managed database migrations
+* Multi-role marketplace platform
+* Production-ready architecture
+* Responsive user interface
+* Secure authentication system
+* Real-world business workflows
+* Comprehensive order and delivery management
