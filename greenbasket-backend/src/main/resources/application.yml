@@ -39,7 +39,7 @@ spring:
     sql-migration-prefix: V
     sql-migration-separator: __
     sql-migration-suffixes: .sql
-    schemas: green_basket_nepal
+    
 
   jackson:
     serialization:
