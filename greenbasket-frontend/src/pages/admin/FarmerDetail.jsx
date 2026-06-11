@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { adminUserApi } from '@/api/users'
 import { PageLoader } from '@/components/common/Loader'
 import { formatDate, formatCurrency } from '@/utils/helpers'
+import { Clock } from 'lucide-react'
 
 const STATUS_STYLES = {
   PENDING: { badge: 'badge-warning', dot: 'status-dot-warning', label: 'Pending Approval' },
