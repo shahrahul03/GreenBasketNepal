@@ -5,15 +5,20 @@ import { useAuth } from '@/hooks/useAuth'
 export const CartContext = createContext(null)
 
 export function CartProvider({ children }) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const [cart, setCart] = useState(null)
   const [loading, setLoading] = useState(false)
+  const role = user?.role?.name || user?.role
 
   const fetchCart = useCallback(async () => {
     if (!isAuthenticated) {
       setCart(null)
       return
     }
+    if (role !== 'CUSTOMER') {
+  setCart(null)
+  return
+}
     setLoading(true)
     try {
       const { data } = await cartApi.getCart()
@@ -23,7 +28,7 @@ export function CartProvider({ children }) {
     } finally {
       setLoading(false)
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, role])
 
   useEffect(() => {
     fetchCart()
