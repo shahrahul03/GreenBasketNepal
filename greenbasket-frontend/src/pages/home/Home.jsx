@@ -151,7 +151,7 @@ export function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {loading
               ? Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)
-              : filteredProducts.map((product) => (
+              : featured.map((product) => (
                   <ProductCard key={product.id} product={product} onToggleWishlist={handleToggleWishlist} />
                 ))
             }
