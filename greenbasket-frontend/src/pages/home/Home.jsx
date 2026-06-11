@@ -91,7 +91,7 @@ export function Home() {
 
         {/* 3. Horizontal Category Chips */}
         <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 mb-6">
-          {['All', 'Vegetables', 'Fruits', 'Herbs', 'Organic', 'Dairy', 'Grains', 'Beverages'].map((cat) => (
+          {['All', ...categories.map(c => c.name)].map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
