@@ -58,6 +58,17 @@ export function Home() {
       toast.error(err.message)
     }
   }
+  const filteredFeatured =
+  activeCategory === 'All'
+    ? featured
+    : featured.filter(product => {
+        const productCategory =
+          product.category?.name ||
+          product.categoryName ||
+          product.category
+
+        return productCategory === activeCategory
+      })
 
   return (
     <div className="min-h-screen bg-surface-50/30">
@@ -151,7 +162,7 @@ export function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {loading
               ? Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)
-              : featured.map((product) => (
+              : filteredFeatured.map((product) => (
                   <ProductCard key={product.id} product={product} onToggleWishlist={handleToggleWishlist} />
                 ))
             }
